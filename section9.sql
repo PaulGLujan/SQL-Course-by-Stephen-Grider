@@ -112,5 +112,55 @@ WHERE price > (
 SELECT name, price
 FROM phones
 WHERE price > (
-    SELECT price FROM phones WHERE name = "S5620 Monte"
+    SELECT price FROM phones WHERE name = 'S5620 Monte'
   );
+  
+-- Show the name of all products that are not in the same department as products
+-- with a price less than 100
+SELECT name FROM products
+WHERE department NOT IN (
+    -- List of departments with price < 100
+    SELECT department FROM products WHERE price < 100 GROUP BY department
+  );
+
+-- Show the name, department, and price of products that are more expensive than
+-- all products in the industrial department
+SELECT name, department, price FROM products
+WHERE price > ALL(
+    -- All prices of industrial department
+    SELECT price FROM products WHERE department = 'Industrial'
+  );
+
+-- Show the name of products that are more expensive than at least one product
+-- in the 'Industrial' department
+SELECT name FROM products WHERE
+price > SOME(
+    -- All prices of industrial department
+    SELECT price FROM products WHERE department = 'Industrial'
+  );
+
+/**************************************************/
+/***           Correlated Subqueries            ***/
+/**************************************************/
+
+-- Show the name, department, and price of the most expensive product in each
+-- department
+SELECT name, department, price FROM products AS p1
+WHERE p1.price = (
+    SELECT MAX(price) FROM products AS p2 WHERE p1.department = p2.department
+  );
+
+-- Without using a join or a group by, print the number of orders for each 
+-- product
+SELECT name, (
+    SELECT COUNT(*) FROM orders AS o 
+    WHERE p.id = o.product_id
+  )
+FROM products AS p;
+
+-- Example of parent query without FROM
+SELECT (
+  SELECT MAX(price) FROM products
+) / (
+  SELECT AVG(price) FROM products
+);
