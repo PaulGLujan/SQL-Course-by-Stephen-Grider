@@ -86,3 +86,36 @@ VALUES ('Shirt', 'Clothes', 24, 1);
 
 -- ERROR:  duplicate key value violates unique constraint "products_name_department_key"
 -- DETAIL:  Key (name, department)=(Shirt, Clothes) already exists.
+
+/**************************************************/
+/***      Validation Check Exercise             ***/
+/**************************************************/
+
+ALTER TABLE products
+ADD CHECK (price > 0);
+
+INSERT INTO products (name, department, price, weight)
+VALUES ('Belt', 'House', -99, 1);
+
+-- ERROR:  new row for relation "products" violates check constraint "products_price_check"
+-- DETAIL:  Failing row contains (9, Belt, House, -99, 1).
+
+/**************************************************/
+/***   Checks Over Multiple Columns Exercise    ***/
+/**************************************************/
+
+CREATE TABLE orders (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(40) NOT NULL,
+  created_at TIMESTAMP NOT NULL,
+  est_delivery TIMESTAMP NOT NULL,
+  CHECK (created_at < est_delivery)
+);
+
+INSERT INTO orders (name, created_at, est_delivery)
+VALUES ('Shirt', '2000-NOV-20 01:00AM', '2000-NOV-25 01:00AM');
+
+INSERT INTO orders (name, created_at, est_delivery)
+VALUES ('Shirt', '2000-NOV-20 01:00AM', '2000-NOV-10 01:00AM');
+
+-- ERROR:  new row for relation "orders" violates check constraint "orders_check"
