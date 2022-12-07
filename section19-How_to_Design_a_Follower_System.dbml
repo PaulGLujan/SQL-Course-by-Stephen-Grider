@@ -1,8 +1,8 @@
 Table users {
   id serial [pk, increment]
-  created_at timestamp
-  updated_at timestamp
-  username varchar(30)
+  created_at timestamptz [default: `now()`]
+  updated_at timestamptz [default: `now()`]
+  username varchar(30) [not null]
   bio varchar(400)
   avatar varchar(200)
   phone varchar(25)
